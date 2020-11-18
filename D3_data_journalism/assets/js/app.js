@@ -15,7 +15,7 @@ var height = svgHeight - margin.top - margin.bottom;
 // Create an SVG wrapper, append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
 var svg = d3
-  .select(".scatter")
+  .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -44,7 +44,7 @@ function xScale(data, chosenXAxis) {
 // function used for updating y-scale upon click on axis label
 function yScale(data, chosenYAxis) {
   // create scales
-  let yLinearScale = d3.scaleLinear()
+  var yLinearScale = d3.scaleLinear()
     .domain([d3.min(data, d => d[chosenYAxis]) * 0.8,
       d3.max(data, d => d[chosenYAxis]) * 1.2
     ])
@@ -67,7 +67,7 @@ function renderAxes(newXScale, xAxis) {
 
 //function used for updating yAxis upon click on axis label
 function renderAxesY(newYScale, yAxis) {
-  let leftAxis = d3.axisLeft(newYScale);
+  var leftAxis = d3.axisLeft(newYScale);
 
   yAxis.transition()
       .duration(1000)
@@ -82,7 +82,7 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
   circlesGroup.transition()
     .duration(1000)
     .attr("cx", d => newXScale(d[chosenXAxis]));
-    .attr("cy", d => newYScale(d[chosenYAxis]));
+    // .attr("cy", d => newYScale(d[chosenYAxis]));
 
   return circlesGroup;
 }
@@ -137,18 +137,19 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   circlesGroup.call(toolTip);
 
   circlesGroup.on("mouseover", function(data) {
-    toolTip.show(data);
+    toolTip.show(data, this);
   })
     // onmouseout event
     .on("mouseout", function(data, index) {
-      toolTip.hide(data);
+      toolTip.hide(data, this);
     });
 
   return circlesGroup;
 }
 
 // Retrieve data from the CSV file and execute everything below
-d3.csv("assets/data/data.csv").then(function(jData, err) {
+// var jData = await d3.csv("data.csv");
+d3.csv("data.csv").then(function(jData, err) {
   if (err) throw err;
 
   // parse data
@@ -166,9 +167,9 @@ d3.csv("assets/data/data.csv").then(function(jData, err) {
 
   // Create y scale function
   var yLinearScale = yScale(jData, chosenYAxis);
-  let yLinearScale = d3.scaleLinear()
-    .domain([0, d3.max(jData, d => d.healthcare)])
-    .range([height, 0]);
+  // let yLinearScale = d3.scaleLinear()
+  //   .domain([0, d3.max(jData, d => d.healthcare)])
+  //   .range([height, 0]);
 
   // Create initial axis functions
   var bottomAxis = d3.axisBottom(xLinearScale);
@@ -181,7 +182,7 @@ d3.csv("assets/data/data.csv").then(function(jData, err) {
     .call(bottomAxis);
 
   // append y axis
-  chartGroup.append("g")
+  var yAxis = chartGroup.append("g")
     .classed("y-axis", true)
     .call(leftAxis);
 
@@ -190,7 +191,7 @@ d3.csv("assets/data/data.csv").then(function(jData, err) {
     .data(jData)
     .enter()
     .append("circle")
-    .attr("cx", d => xLinearScale(d[chosenXAxis]))
+    .attr("cx", d => xLinearScale(d[chosenXAxis1]))
     .attr("cy", d => yLinearScale(d[chosenYAxis]))
     .attr("r", 20)
     .attr("fill", "pink")
@@ -334,9 +335,9 @@ d3.csv("assets/data/data.csv").then(function(jData, err) {
         }
       }
     });
-}).catch(function(error) {
-  console.log(error);
-});
+// }).catch(function(error) {
+//   console.log(error);
+// });
 
 // y axis labels event listener
 ylabelsGroup.selectAll("text")
