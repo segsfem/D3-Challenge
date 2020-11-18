@@ -404,5 +404,5 @@ ylabelsGroup.selectAll("text")
   }
 });
 }).catch(function(error) {
-console.log(error);
+// console.log(error);
 });
