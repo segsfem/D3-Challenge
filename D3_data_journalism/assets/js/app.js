@@ -81,8 +81,8 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
 
   circlesGroup.transition()
     .duration(1000)
-    .attr("cx", d => newXScale(d[chosenXAxis]));
-    // .attr("cy", d => newYScale(d[chosenYAxis]));
+    .attr("cx", d => newXScale(d[chosenXAxis]))
+    .attr("cy", d => newYScale(d[chosenYAxis]));
 
   return circlesGroup;
 }
@@ -149,11 +149,11 @@ function updateToolTip(chosenXAxis, circlesGroup) {
 
 // Retrieve data from the CSV file and execute everything below
 // var jData = await d3.csv("data.csv");
-d3.csv("data.csv").then(function(jData, err) {
+d3.csv("data.csv").then(function(data, err) {
   if (err) throw err;
 
   // parse data
-  jData.forEach(function(data) {
+  data.forEach(function(data) {
     data.poverty = +data.poverty;
     data.age = +data.age;
     data.income = +data.income;
@@ -163,10 +163,10 @@ d3.csv("data.csv").then(function(jData, err) {
   });
 
   // xLinearScale function above csv import
-  var xLinearScale = xScale(jData, chosenXAxis);
+  var xLinearScale = xScale(data, chosenXAxis);
 
   // Create y scale function
-  var yLinearScale = yScale(jData, chosenYAxis);
+  var yLinearScale = yScale(data, chosenYAxis);
   // let yLinearScale = d3.scaleLinear()
   //   .domain([0, d3.max(jData, d => d.healthcare)])
   //   .range([height, 0]);
@@ -188,7 +188,7 @@ d3.csv("data.csv").then(function(jData, err) {
 
   // append initial circles
   var circlesGroup = chartGroup.selectAll("circle")
-    .data(jData)
+    .data(data)
     .enter()
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis1]))
@@ -199,7 +199,7 @@ d3.csv("data.csv").then(function(jData, err) {
 
   // append state abbreviations
   var textGroup =chartGroup.selectAll(".stateText")
-    .data(jData)
+    .data(data)
     .enter()
     .append("text")
     .classed("stateText", true)
@@ -285,7 +285,7 @@ d3.csv("data.csv").then(function(jData, err) {
 
         // functions here found above csv import
         // updates x scale for new data
-        xLinearScale = xScale(jData, chosenXAxis);
+        xLinearScale = xScale(data, chosenXAxis);
 
         // updates x axis with transition
         xAxis = renderAxes(xLinearScale, xAxis);
@@ -353,7 +353,7 @@ ylabelsGroup.selectAll("text")
 
     // functions here found above csv import
     // updates x scale for new data
-    yLinearScale = yScale(jData, chosenYAxis);
+    yLinearScale = yScale(data, chosenYAxis);
 
     // updates y axis with transition
     yAxis = renderAxes(yLinearScale, yAxis);
